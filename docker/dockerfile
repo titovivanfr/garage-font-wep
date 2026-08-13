@@ -1,6 +1,16 @@
-FROM node:26-alpine AS builder
+# Select the final stage: development (default) or production.
+#   docker build --build-arg APP_ENV=production .
+ARG APP_ENV=development
+
+FROM node:26-alpine AS base
 
 WORKDIR /app
+
+# ---------- Builder (production build) ----------
+FROM base AS builder
+
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
 
 COPY package.json package-lock.json ./
 RUN npm ci
@@ -8,14 +18,41 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM node:26-alpine AS runner
+# ---------- Development ----------
+FROM base AS development
+
+ENV NODE_ENV=development
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+
+# ---------- Production ----------
+FROM node:26-alpine AS production
 
 WORKDIR /app
 
 ENV NODE_ENV=production
+ENV HOST=0.0.0.0
+ENV PORT=3000
 
-COPY --from=builder /app/.output ./.output
+RUN addgroup -S nodejs && adduser -S nodejs -G nodejs
+
+COPY --from=builder --chown=nodejs:nodejs /app/.output ./.output
+
+USER nodejs
 
 EXPOSE 3000
 
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s \
+  CMD wget -q -O /dev/null http://127.0.0.1:${PORT}/ || exit 1
+
 CMD ["node", ".output/server/index.mjs"]
+
+# ---------- Final stage (picked by APP_ENV) ----------
+FROM ${APP_ENV} AS app

@@ -1,6 +1,15 @@
+<script setup lang="ts">
+import { onBeforeMount } from "vue";
+import { csrfTokenRequest } from "~/services/auth/CsrfToketService";
+await onBeforeMount(async () => {
+  await csrfTokenRequest();
+});
+</script>
+
 <template>
-  <div>
-    <NuxtRouteAnnouncer />
-    <NuxtWelcome />
+  <div
+    class="min-h-dvh bg-zinc-50 text-zinc-900 transition-colors duration-200 dark:bg-zinc-950 dark:text-zinc-100"
+  >
+    <NuxtPage />
   </div>
 </template>

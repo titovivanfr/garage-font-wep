@@ -1,5 +1,48 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import tailwindcss from "@tailwindcss/vite";
+
 export default defineNuxtConfig({
-  compatibilityDate: '2025-07-15',
-  devtools: { enabled: true }
-})
+  compatibilityDate: "2025-07-15",
+  devtools: { enabled: true },
+
+  css: ["~/assets/css/main.css"],
+
+  app: {
+    head: {
+      htmlAttrs: { lang: "en" },
+      title: "GarageOs — Moins de paperasse",
+      meta: [{ name: "theme-color", content: "#09090b" }],
+      script: [
+        {
+          innerHTML: `(function(){try{var t=localStorage.getItem("garage-theme");var dark=t==="dark"||t==="light"?t==="dark":true;var r=document.documentElement;r.classList.toggle("dark",dark);r.style.colorScheme=dark?"dark":"light"}catch(e){}})();`,
+        },
+      ],
+    },
+  },
+
+  components: [
+    {
+      path: "~/components",
+      pathPrefix: false,
+    },
+  ],
+
+  runtimeConfig: {
+    public: {
+      apiBase: (import.meta.env.NUXT_PUBLIC_API_BASE ?? "") + "/api",
+    },
+  },
+
+  vite: {
+    plugins: [tailwindcss()],
+  },
+
+  typescript: {
+    strict: true,
+  },
+
+  modules: ["@nuxt/eslint"],
+  alias: {
+    utils: "~/utils",
+  },
+});
