@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { onBeforeMount } from "vue";
-import { csrfTokenRequest } from "~/services/auth/CsrfToketService";
-await onBeforeMount(async () => {
-  await csrfTokenRequest();
+import { initCsrf } from "~/services/auth/CsrfTokenService";
+
+onBeforeMount(async () => {
+  await initCsrf();
 });
 </script>
 
