@@ -1,4 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import process from "node:process";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineNuxtConfig({
@@ -29,7 +30,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiBase: (import.meta.env.NUXT_PUBLIC_API_BASE ?? "") + "/api",
+      backendBase: process.env.BACKEND_API_BASE ?? "",
+      apiBase: (process.env.BACKEND_API_BASE ?? "") + "/api",
     },
   },
 
