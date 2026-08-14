@@ -1,3 +1,5 @@
+import { onMounted, ref, watch } from "vue";
+
 export type Theme = "light" | "dark";
 
 const STORAGE_KEY = "garage-theme";
@@ -7,7 +9,10 @@ export function useTheme() {
 
   if (import.meta.client) {
     const root = document.documentElement;
-    theme.value = root.classList.contains("dark") ? "dark" : "light";
+
+    onMounted(() => {
+      theme.value = root.classList.contains("dark") ? "dark" : "light";
+    });
 
     watch(theme, (value) => {
       root.classList.toggle("dark", value === "dark");

@@ -1,6 +1,5 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
-import process from "node:process";
 import tailwindcss from "@tailwindcss/vite";
+// https://nuxt.com/docs/api/configuration/nuxt-config
 
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
@@ -28,10 +27,14 @@ export default defineNuxtConfig({
     },
   ],
 
+  routeRules: {
+    "/": { redirect: "/login" },
+  },
+
   runtimeConfig: {
     public: {
-      backendBase: process.env.BACKEND_API_BASE ?? "",
-      apiBase: (process.env.BACKEND_API_BASE ?? "") + "/api",
+      backendBase: import.meta.env.BACKEND_API_BASE ?? "",
+      apiBase: (import.meta.env.BACKEND_API_BASE ?? "") + "/api",
     },
   },
 

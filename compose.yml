@@ -15,7 +15,8 @@ services:
 
     ports:
       - "3000:3000"
-    networks:
-      default:
-        external: true
-        name: garage-app_sail
+
+networks:
+  default:
+    external: true
+    name: garage-app_sail

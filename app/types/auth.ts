@@ -11,6 +11,5 @@ export interface AuthUser {
 }
 
 export interface AuthSession {
-  accessToken: string;
   user: AuthUser;
 }

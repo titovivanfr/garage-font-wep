@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Wrench } from "@lucide/vue";
+
 withDefaults(defineProps<{ variant?: "auto" | "inverse" }>(), {
   variant: "auto",
 });
@@ -9,7 +11,7 @@ withDefaults(defineProps<{ variant?: "auto" | "inverse" }>(), {
     <div
       class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand-500 text-white shadow-lg shadow-brand-500/30"
     >
-      <AppIcon icon="wrench" class="h-5 w-5" />
+      <Wrench aria-hidden="true" class="h-5 w-5" />
     </div>
 
     <div class="leading-tight">

@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from "vue";
-import type { AuthSession, LoginCredentials } from "~/DTOs/auth/AuthDtos";
-import { authService } from "~/services/auth/AuthService";
+import { ArrowRight, Lock, Mail } from "@lucide/vue";
+import type { LoginCredentials } from "~/types/auth";
 
-const emit = defineEmits<{
-  success: [session: AuthSession];
-}>();
+const { login } = useAuth();
 
 const form = reactive<LoginCredentials>({
   email: "",
@@ -43,8 +40,7 @@ async function onSubmit() {
 
   submitting.value = true;
   try {
-    const session = await authService.login(form);
-    emit("success", session);
+    await login(form);
   } catch (error) {
     formError.value =
       error instanceof Error
@@ -83,7 +79,7 @@ async function onSubmit() {
         v-model="form.email"
         label="Adresse e-mail"
         type="email"
-        icon="mail"
+        :icon="Mail"
         autocomplete="email"
         placeholder="votre-email@example.com"
         autofocus
@@ -96,7 +92,7 @@ async function onSubmit() {
         v-model="form.password"
         label="Mot de passe"
         type="password"
-        icon="lock"
+        :icon="Lock"
         autocomplete="current-password"
         placeholder="••••••••"
         :error="passwordError"
@@ -137,8 +133,8 @@ async function onSubmit() {
       />
       <template v-else>
         <span>Se connecter</span>
-        <AppIcon
-          icon="arrowRight"
+        <ArrowRight
+          aria-hidden="true"
           class="h-4 w-4 transition-transform group-hover:translate-x-0.5"
         />
       </template>

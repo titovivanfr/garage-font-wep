@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import type { AppIconName } from "~/utils/icons";
+import { Eye, EyeOff, type LucideIcon } from "@lucide/vue";
 
 const props = withDefaults(
   defineProps<{
@@ -9,19 +8,27 @@ const props = withDefaults(
     type?: "email" | "password" | "text";
     autocomplete?: string;
     placeholder?: string;
-    icon?: AppIconName;
+    icon?: LucideIcon;
     error?: string;
     disabled?: boolean;
     autofocus?: boolean;
   }>(),
-  { type: "text" },
+  {
+    type: "text",
+    autocomplete: undefined,
+    placeholder: "",
+    icon: undefined,
+    error: "",
+  },
 );
 
 const model = defineModel<string>({ default: "" });
 
 const showPassword = ref(false);
 
-const inputType = computed(() => (props.type === "password" && showPassword.value ? "text" : props.type));
+const inputType = computed(() =>
+  props.type === "password" && showPassword.value ? "text" : props.type,
+);
 
 const hasIcon = computed(() => Boolean(props.icon));
 const hasToggle = computed(() => props.type === "password");
@@ -30,14 +37,18 @@ const hasError = computed(() => Boolean(props.error));
 
 <template>
   <div class="space-y-1.5">
-    <label :for="id" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+    <label
+      :for="id"
+      class="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+    >
       {{ label }}
     </label>
 
     <div class="relative">
-      <AppIcon
+      <component
+        :is="icon"
         v-if="hasIcon"
-        :icon="icon!"
+        aria-hidden="true"
         class="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-400 dark:text-zinc-500"
       />
 
@@ -68,10 +79,16 @@ const hasError = computed(() => Boolean(props.error));
         class="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-zinc-400 transition-colors hover:text-zinc-600 dark:hover:text-zinc-200"
         @click="showPassword = !showPassword"
       >
-        <AppIcon :icon="showPassword ? 'eyeOff' : 'eye'" class="h-5 w-5" />
+        <component
+          :is="showPassword ? EyeOff : Eye"
+          aria-hidden="true"
+          class="h-5 w-5"
+        />
       </button>
     </div>
 
-    <p v-if="hasError" :id="`${id}-error`" class="text-xs text-red-500">{{ error }}</p>
+    <p v-if="hasError" :id="`${id}-error`" class="text-xs text-red-500">
+      {{ error }}
+    </p>
   </div>
 </template>

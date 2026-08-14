@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import type { AuthSession } from "~/DTOs/auth/AuthDtos";
-const session = ref<AuthSession | null>(null);
+import { Check } from "@lucide/vue";
+
+const { session, logout } = useAuth();
 </script>
 
 <template>
@@ -24,7 +24,7 @@ const session = ref<AuthSession | null>(null);
           <div
             class="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-full bg-emerald-500 text-white"
           >
-            <AppIcon icon="check" class="h-7 w-7" />
+            <Check aria-hidden="true" class="h-7 w-7" />
           </div>
           <h2 class="text-xl font-bold text-emerald-900 dark:text-emerald-100">
             Signed in as {{ session.user.email }}
@@ -35,9 +35,15 @@ const session = ref<AuthSession | null>(null);
           <p class="mt-4 text-xs text-emerald-600/70 dark:text-emerald-400/60">
             Demo mode — no backend connected yet.
           </p>
+          <button
+            type="button"
+            class="mt-4 w-full rounded-xl border border-emerald-300 px-4 py-2 text-sm font-semibold text-emerald-700 transition-colors hover:bg-emerald-100 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/40"
+            @click="logout"
+          >
+            Se déconnecter
+          </button>
         </div>
-
-        <LoginForm v-else @success="session = $event" />
+        <LoginForm v-else />
       </div>
     </div>
   </main>

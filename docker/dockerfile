@@ -24,9 +24,11 @@ FROM base AS development
 ENV NODE_ENV=development
 
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm ci && chown -R node:node /app
 
-COPY . .
+COPY --chown=node:node . .
+
+USER node
 
 EXPOSE 3000
 
