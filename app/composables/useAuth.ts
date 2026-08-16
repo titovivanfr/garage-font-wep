@@ -10,6 +10,7 @@ export function useAuth() {
       session.value = await $fetch<AuthSession>("/api/auth/login", {
         method: "POST",
         headers: {
+          "X-Requested-With": "XMLHttpRequest",
           "Content-Type": "application/json",
           Accept: "application/json",
         },
