@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { Check } from "@lucide/vue";
+import PublicNav from "~/components/nav/PublicNav.vue";
+import TopNav from "~/components/nav/TopNav.vue";
+import LoginForm from "~/components/auth/LoginForm.vue";
 
 const { session, logout } = useAuth();
 </script>
@@ -9,8 +12,8 @@ const { session, logout } = useAuth();
     <header
       class="flex items-center justify-between px-4 pt-4 sm:px-6 lg:px-10"
     >
-      <AppLogo />
-      <ThemeToggle />
+      <PublicNav v-if="!session" />
+      <TopNav v-if="session" />
     </header>
 
     <div

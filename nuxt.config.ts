@@ -48,6 +48,7 @@ export default defineNuxtConfig({
 
   modules: ["@nuxt/eslint"],
   alias: {
-    utils: "~/utils",
+    utils: "./app/utils",
+    types: "./app/types",
   },
 });
