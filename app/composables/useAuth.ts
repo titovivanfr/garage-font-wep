@@ -2,7 +2,6 @@ import type { AuthSession, LoginCredentials } from "~/types/auth";
 import type { Ref, ComputedRef } from "vue";
 import { ref, computed } from "vue";
 import { AuthStatus } from "~/enums/authStatus";
-const session = ref<AuthSession | null>(null);
 
 interface UseAuthReturn {
   session: Ref<AuthSession | null>;
@@ -10,11 +9,10 @@ interface UseAuthReturn {
   login: (credentials: LoginCredentials) => Promise<void>;
   logout: () => Promise<void>;
   fetchUser: () => Promise<void>;
-  initialized: Ref<boolean>;
 }
 
 export function useAuth(): UseAuthReturn {
-  const initialized = useState<boolean>("auth-initialized", () => false);
+  const session = ref<AuthSession | null>(null);
   const isAuthenticated = computed(() => session.value !== null);
   const headers = {
     "X-Requested-With": "XMLHttpRequest",
@@ -23,19 +21,26 @@ export function useAuth(): UseAuthReturn {
   };
   const status = useState<AuthStatus>("auth-status", () => AuthStatus.Loading);
   const fetchUser = async (): Promise<void> => {
+    const requestHeaders = import.meta.server
+      ? useRequestHeaders(["cookie"])
+      : {};
     try {
       status.value = AuthStatus.Loading;
-      session.value = await $fetch<AuthSession>("/api/user", {
+      session.value = await $fetch<AuthSession>("/api/auth/user", {
         method: "GET",
         credentials: "include",
-        headers,
+        headers: {
+          ...headers,
+          ...requestHeaders,
+        },
       });
-      console.log("Fetched user:", session.value);
       if (session.value) {
         status.value = AuthStatus.Authenticated;
       } else {
         status.value = AuthStatus.Unauthenticated;
       }
+      console.log("Fetched user:", session.value);
+      console.log("Statuis:", status.value);
     } catch (error: unknown) {
       const response = (error as { response?: { status?: number } } | null)
         ?.response;
@@ -47,9 +52,6 @@ export function useAuth(): UseAuthReturn {
         session.value = null;
         status.value = AuthStatus.Unauthenticated;
       }
-      throw error;
-    } finally {
-      initialized.value = true;
     }
   };
 
@@ -83,6 +85,5 @@ export function useAuth(): UseAuthReturn {
     login,
     logout,
     fetchUser,
-    initialized,
   };
 }

@@ -9,7 +9,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      htmlAttrs: { lang: "en" },
+      htmlAttrs: { lang: "fr" },
       title: "GarageOs — Moins de paperasse",
       meta: [{ name: "theme-color", content: "#09090b" }],
       script: [
