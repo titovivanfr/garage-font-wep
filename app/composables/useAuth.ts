@@ -1,19 +1,14 @@
 import type { AuthSession, LoginCredentials } from "~/types/auth";
-import type { Ref, ComputedRef } from "vue";
-import { ref, computed } from "vue";
 import { AuthStatus } from "~/enums/authStatus";
-
+import { useState } from "#app";
 interface UseAuthReturn {
-  session: Ref<AuthSession | null>;
-  isAuthenticated: ComputedRef<boolean>;
   login: (credentials: LoginCredentials) => Promise<void>;
   logout: () => Promise<void>;
   fetchUser: () => Promise<void>;
 }
 
 export function useAuth(): UseAuthReturn {
-  const session = ref<AuthSession | null>(null);
-  const isAuthenticated = computed(() => session.value !== null);
+  const session = useState<AuthSession | null>("auth-session", () => null);
   const headers = {
     "X-Requested-With": "XMLHttpRequest",
     "Content-Type": "application/json",
@@ -21,19 +16,17 @@ export function useAuth(): UseAuthReturn {
   };
   const status = useState<AuthStatus>("auth-status", () => AuthStatus.Loading);
   const fetchUser = async (): Promise<void> => {
-    const requestHeaders = import.meta.server
-      ? useRequestHeaders(["cookie"])
-      : {};
     try {
       status.value = AuthStatus.Loading;
-      session.value = await $fetch<AuthSession>("/api/auth/user", {
+      const data = await $fetch<AuthSession>("/api/auth/user", {
         method: "GET",
         credentials: "include",
-        headers: {
-          ...headers,
-          ...requestHeaders,
-        },
+        headers,
       });
+      if (data) {
+        data.logout = logout;
+      }
+      session.value = data;
       if (session.value) {
         status.value = AuthStatus.Authenticated;
       } else {
@@ -57,12 +50,15 @@ export function useAuth(): UseAuthReturn {
 
   const login = async (credentials: LoginCredentials): Promise<void> => {
     try {
-      session.value = await $fetch<AuthSession>("/api/auth/login", {
+      const req = await $fetch<AuthSession>("/api/auth/login", {
         method: "POST",
         headers,
         body: credentials,
         credentials: "include",
       });
+      req.logout = logout;
+      session.value = req;
+      console.log("Logged in login in user:", session.value);
     } catch (error) {
       const body = (error as { data?: { message?: string } })?.data;
       throw new Error(body?.message ?? "E-mail ou mot de passe invalide.", {
@@ -78,10 +74,7 @@ export function useAuth(): UseAuthReturn {
     });
     session.value = null;
   };
-
   return {
-    session,
-    isAuthenticated,
     login,
     logout,
     fetchUser,

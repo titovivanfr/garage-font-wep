@@ -3,8 +3,9 @@ import { Check } from "@lucide/vue";
 import PublicNav from "~/components/nav/PublicNav.vue";
 import TopNav from "~/components/nav/TopNav.vue";
 import LoginForm from "~/components/auth/LoginForm.vue";
+import type { AuthSession } from "~/types/auth";
 
-const { session, logout } = useAuth();
+const session = useState<AuthSession | null>("auth-session", () => null);
 </script>
 
 <template>
@@ -41,7 +42,7 @@ const { session, logout } = useAuth();
           <button
             type="button"
             class="mt-4 w-full rounded-xl border border-emerald-300 px-4 py-2 text-sm font-semibold text-emerald-700 transition-colors hover:bg-emerald-100 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/40"
-            @click="logout"
+            @click="session?.logout()"
           >
             Se déconnecter
           </button>
